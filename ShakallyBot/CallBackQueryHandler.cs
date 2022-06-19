@@ -69,7 +69,7 @@ namespace Shakalik
                 return;
             }
 
-            Shakkal.CompressAndSaveFile(savePath + actualId + @"\Compress\" + fileName + ".jpg", savePath + actualId + @"\Compress\", fileName + ".jpg", m_random.Next(10));
+            await Shakkal.CompressAndSaveFileAsync(savePath + actualId + @"\Compress\" + fileName + ".jpg", savePath + actualId + @"\Compress\", fileName + ".jpg", m_random.Next(10));
             await using Stream stream = System.IO.File.OpenRead(savePath + actualId + @"\Compress\" + fileName + ".jpg");
             Message finalMessage = await m_client.SendPhotoAsync(
                 chatId: actualId,

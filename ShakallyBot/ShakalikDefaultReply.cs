@@ -21,6 +21,13 @@ namespace Shakalik
         private long? m_chatId;
         private Random m_random = new();
 
+        private static List<string> emojiSet = new List<string>()
+            {
+                "🙃" , "😂", "🦸", "🤦‍", "🤷‍", "🥰", "🤗", "😶‍🌫", "😪", "😫", "😛", "😤", "🤒", "🤢", "🥸",
+                "🤖","👹","👽","🙉","🐻‍","❄️","🐗","🦊","🦄","🐈","🐏","🐧","👁️","👀","👀","👩🏾‍","❤️‍","👨🏾","👨🏻‍",
+                "❤️‍","👨🏾","👩‍","❤️‍","💋‍","👨"
+            };
+
         public ShakalikDefaultReply(CancellationToken cancellationToken, ITelegramBotClient? client, long? chatId, Update update)
         {
             m_cancellationToken = cancellationToken;
@@ -56,13 +63,6 @@ namespace Shakalik
 
         internal async Task CompressPhotoAndReply(string savePath)
         {
-            List<string> emojiSet = new List<string>()
-            {
-                "🙃" , "😂", "🦸", "🤦‍", "🤷‍", "🥰", "🤗", "😶‍🌫", "😪", "😫", "😛", "😤", "🤒", "🤢", "🥸",
-                "🤖","👹","👽","🙉","🐻‍","❄️","🐗","🦊","🦄","🐈","🐏","🐧","👁️","👀","👀","👩🏾‍","❤️‍","👨🏾","👨🏻‍",
-                "❤️‍","👨🏾","👩‍","❤️‍","💋‍","👨"
-            };
-
             Message? middleMessage = await m_client.SendTextMessageAsync(
                 chatId: m_chatId,
                 text: "<b>Почти готово </b>" + emojiSet[m_random.Next(emojiSet.Count)],
@@ -104,7 +104,7 @@ namespace Shakalik
             fileStream.Dispose();
     
 
-            Shakkal.CompressAndSaveFile(dirPath + @"\" + fileId + ".jpg", compressPath + @"\", m_update.Message.MessageId.ToString() + ".jpg",compressionLevel);
+            await Shakkal.CompressAndSaveFileAsync(dirPath + @"\" + fileId + ".jpg", compressPath + @"\", m_update.Message.MessageId.ToString() + ".jpg",compressionLevel);
             
             await using Stream stream = System.IO.File.OpenRead(compressPath + @"\" + m_update.Message.MessageId.ToString() + ".jpg");
             Message finalMessage = await m_client.SendPhotoAsync(
@@ -132,6 +132,91 @@ namespace Shakalik
                     cancellationToken: m_cancellationToken);
 
             }
+        }
+
+        internal async Task CompressAudioAndReply(string savePath)
+        {
+            Message? middleMessage = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: "<b>Немного терпения... </b>" + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
+
+            var fileId = m_update.Message?.Audio?.FileId;
+            Directory.CreateDirectory(savePath + m_chatId);
+            Directory.CreateDirectory(savePath + m_chatId + @"\Uncompress");
+            Directory.CreateDirectory(savePath + m_chatId + @"\Compress");
+
+            string dirPath = savePath + m_chatId + @"\Uncompress";
+            string compressPath = savePath + m_chatId + @"\Compress\";
+
+            await using FileStream fileStream = System.IO.File.OpenWrite(savePath + m_chatId + @"\Uncompress\" + fileId + ".mp3");
+            var file = await m_client.GetInfoAndDownloadFileAsync(
+                fileId: fileId,
+                destination: fileStream);
+            fileStream.Dispose();
+            await Shakkal.CompressAudioFileAsync(@"\Media\" + m_chatId + @"\Uncompress\" + fileId + ".mp3", @"\Media\" + m_chatId + @"\Compress\" + fileId + ".mp3");
+            
+            await using Stream stream = System.IO.File.OpenRead(compressPath + @"\" + fileId + ".mp3");
+            Message finalMessage = await m_client.SendAudioAsync(
+                chatId: m_chatId,
+                audio: new InputOnlineFile(content: stream));
+            stream.Dispose();
+
+            long sizeStream = new System.IO.FileInfo(compressPath + @"\" + fileId + ".mp3").Length;
+            var fileInfoSize = await m_client.GetFileAsync(fileId);
+            var fileSizeBeforeCompression = fileInfoSize.FileSize;
+            long bytesSaved = fileSizeBeforeCompression.Value - sizeStream;
+            Message? compressionMessage = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: bytesSaved + " байт сохранено! " + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
+        }
+
+        internal async Task CompressVoiceAndReply(string savePath)
+        {
+            Message? middleMessage = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: "<b>Немного терпения... </b>" + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
+
+            var fileId = m_update.Message?.Voice?.FileId;
+            Directory.CreateDirectory(savePath + m_chatId);
+            Directory.CreateDirectory(savePath + m_chatId + @"\Uncompress");
+            Directory.CreateDirectory(savePath + m_chatId + @"\Compress");
+
+            string dirPath = savePath + m_chatId + @"\Uncompress";
+            string compressPath = savePath + m_chatId + @"\Compress\";
+
+            await using FileStream fileStream = System.IO.File.OpenWrite(savePath + m_chatId + @"\Uncompress\" + fileId + ".mp3");
+            var file = await m_client.GetInfoAndDownloadFileAsync(
+                fileId: fileId,
+                destination: fileStream);
+            
+            fileStream.Dispose();
+            await Shakkal.CompressAudioFileAsync(@"\Media\" + m_chatId + @"\Uncompress\" + fileId + ".mp3", @"\Media\" + m_chatId + @"\Compress\" + fileId + ".mp3");
+
+            await using Stream stream = System.IO.File.OpenRead(compressPath + @"\" + fileId + ".mp3");
+            Message finalMessage = await m_client.SendVoiceAsync(
+                chatId: m_chatId,
+                voice: new InputOnlineFile(content: stream));
+            stream.Dispose();
+
+            long sizeStream = new System.IO.FileInfo(compressPath + @"\" + fileId + ".mp3").Length;
+            var fileInfoSize = await m_client.GetFileAsync(fileId);
+            var fileSizeBeforeCompression = fileInfoSize.FileSize;
+            long bytesSaved = fileSizeBeforeCompression.Value - sizeStream;
+            Message? compressionMessage = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: bytesSaved + " байт сохранено! " + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
         }
     }
 }
