@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Media\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\ShakallerImageCompression\Shakaller\Shakkaler\Shakkaler\Shakkaler.csproj" />
   </ItemGroup>
 
