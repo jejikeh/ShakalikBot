@@ -40,7 +40,7 @@ namespace Shakalik
                 replyMarkup: new InlineKeyboardMarkup(
                     InlineKeyboardButton.WithUrl(
                         "Посмотреть исходный код",
-                        "https://core.telegram.org/bots/api#sendmessage")),
+                        "https://github.com/jejikeh/ShakalikBot")),
                 cancellationToken: m_cancellationToken);
         }
         internal async Task ErrorReply()
