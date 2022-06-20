@@ -156,13 +156,14 @@ namespace Shakalik
                 fileId: fileId,
                 destination: fileStream);
             fileStream.Dispose();
+
             await Shakkal.CompressAudioFileAsync(@"\Media\" + m_chatId + @"\Uncompress\" + fileId + ".mp3", @"\Media\" + m_chatId + @"\Compress\" + fileId + ".mp3");
-            
-            await using Stream stream = System.IO.File.OpenRead(compressPath + @"\" + fileId + ".mp3");
+
+            await using Stream streamFile = System.IO.File.OpenRead(compressPath + @"\" + fileId + ".mp3");
             Message finalMessage = await m_client.SendAudioAsync(
                 chatId: m_chatId,
-                audio: new InputOnlineFile(content: stream));
-            stream.Dispose();
+                audio: new InputOnlineFile(content: streamFile));
+            streamFile.Dispose();
 
             long sizeStream = new System.IO.FileInfo(compressPath + @"\" + fileId + ".mp3").Length;
             var fileInfoSize = await m_client.GetFileAsync(fileId);
@@ -208,6 +209,92 @@ namespace Shakalik
             stream.Dispose();
 
             long sizeStream = new System.IO.FileInfo(compressPath + @"\" + fileId + ".mp3").Length;
+            var fileInfoSize = await m_client.GetFileAsync(fileId);
+            var fileSizeBeforeCompression = fileInfoSize.FileSize;
+            long bytesSaved = fileSizeBeforeCompression.Value - sizeStream;
+            Message? compressionMessage = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: bytesSaved + " байт сохранено! " + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
+        }
+
+        internal async Task CompressVideoAndReply(string savePath)
+        {
+            Message? middleMessage = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: "<b>Немного терпения... </b>" + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
+
+            var fileId = m_update.Message?.Video?.FileId;
+            Directory.CreateDirectory(savePath + m_chatId);
+            Directory.CreateDirectory(savePath + m_chatId + @"\Uncompress");
+            Directory.CreateDirectory(savePath + m_chatId + @"\Compress");
+
+            string dirPath = savePath + m_chatId + @"\Uncompress";
+            string compressPath = savePath + m_chatId + @"\Compress\";
+
+            await using FileStream fileStream = System.IO.File.OpenWrite(savePath + m_chatId + @"\Uncompress\" + fileId + ".mp4");
+            var file = await m_client.GetInfoAndDownloadFileAsync(
+                fileId: fileId,
+                destination: fileStream);
+
+            fileStream.Dispose();
+            await Shakkal.CompressVideoFileAsync(@"\Media\" + m_chatId + @"\Uncompress\" + fileId + ".mp4", @"\Media\" + m_chatId + @"\Compress\" + fileId + ".mp4");
+
+            await using Stream stream = System.IO.File.OpenRead(compressPath + @"\" + fileId + ".mp4");
+            Message finalMessage = await m_client.SendVideoAsync(
+                chatId: m_chatId,
+                video: new InputOnlineFile(content: stream));
+            stream.Dispose();
+
+            long sizeStream = new System.IO.FileInfo(compressPath + @"\" + fileId + ".mp4").Length;
+            var fileInfoSize = await m_client.GetFileAsync(fileId);
+            var fileSizeBeforeCompression = fileInfoSize.FileSize;
+            long bytesSaved = fileSizeBeforeCompression.Value - sizeStream;
+            Message? compressionMessage = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: bytesSaved + " байт сохранено! " + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
+        }
+
+        internal async Task CompressVideoNoteAndReply(string savePath)
+        {
+            Message? middleMessage = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: "<b>Немного терпения... </b>" + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
+
+            var fileId = m_update.Message?.VideoNote?.FileId;
+            Directory.CreateDirectory(savePath + m_chatId);
+            Directory.CreateDirectory(savePath + m_chatId + @"\Uncompress");
+            Directory.CreateDirectory(savePath + m_chatId + @"\Compress");
+
+            string dirPath = savePath + m_chatId + @"\Uncompress";
+            string compressPath = savePath + m_chatId + @"\Compress\";
+
+            await using FileStream fileStream = System.IO.File.OpenWrite(savePath + m_chatId + @"\Uncompress\" + fileId + ".mp4");
+            var file = await m_client.GetInfoAndDownloadFileAsync(
+                fileId: fileId,
+                destination: fileStream);
+
+            fileStream.Dispose();
+            await Shakkal.CompressVideoFileAsync(@"\Media\" + m_chatId + @"\Uncompress\" + fileId + ".mp4", @"\Media\" + m_chatId + @"\Compress\" + fileId + ".mp4");
+
+            await using Stream stream = System.IO.File.OpenRead(compressPath + @"\" + fileId + ".mp4");
+            Message finalMessage = await m_client.SendVideoNoteAsync(
+                chatId: m_chatId,
+                videoNote: new InputOnlineFile(content: stream));
+            stream.Dispose();
+
+            long sizeStream = new System.IO.FileInfo(compressPath + @"\" + fileId + ".mp4").Length;
             var fileInfoSize = await m_client.GetFileAsync(fileId);
             var fileSizeBeforeCompression = fileInfoSize.FileSize;
             long bytesSaved = fileSizeBeforeCompression.Value - sizeStream;

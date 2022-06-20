@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ShakallerImageCompression\Shakaller\Shakkaler\Shakkaler\Shakkaler.csproj" />
+    <ProjectReference Include="D:\Jejikeh\programming\.net\shakaly\ShakallerImageCompression\Shakaller\Shakkaler\Shakkaler\Shakkaler.csproj" />
   </ItemGroup>
 
 </Project>

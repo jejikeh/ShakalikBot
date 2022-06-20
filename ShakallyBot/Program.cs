@@ -67,6 +67,14 @@ namespace Shakalik {
             {
                 await defaultReply.CompressVoiceAndReply(basePath + @"\Media\");
             }
+            else if (update.Message?.Type == MessageType.Video)
+            {
+                await defaultReply.CompressVideoAndReply(basePath + @"\Media\");
+            }
+            else if (update.Message?.Type == MessageType.VideoNote)
+            {
+                await defaultReply.CompressVideoNoteAndReply(basePath + @"\Media\");
+            }
             Console.WriteLine(
                 $"{update.Message?.From?.FirstName} sent message {update.Message?.MessageId} " +
                 $"to chat {update.Message?.Chat.Id} at {update.Message?.Date}. "
