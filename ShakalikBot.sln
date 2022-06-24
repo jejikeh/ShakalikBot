@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShakalikBot", "ShakallyBot\ShakalikBot.csproj", "{05484043-BC04-4FB4-9C80-6D73515701D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shakkaler", "D:\Jejikeh\programming\.net\shakaly\ShakallerImageCompression\Shakaller\Shakkaler\Shakkaler\Shakkaler.csproj", "{53F3BA8B-8821-4B4B-BD53-7070FEE5AEEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shakkaler", "..\ShakallerImageCompression\Shakaller\ShakkalerCompress\Shakkaler\Shakkaler.csproj", "{9C06FDF0-EB2E-43B1-B0E7-0506B8844B42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{05484043-BC04-4FB4-9C80-6D73515701D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05484043-BC04-4FB4-9C80-6D73515701D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05484043-BC04-4FB4-9C80-6D73515701D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{53F3BA8B-8821-4B4B-BD53-7070FEE5AEEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{53F3BA8B-8821-4B4B-BD53-7070FEE5AEEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{53F3BA8B-8821-4B4B-BD53-7070FEE5AEEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{53F3BA8B-8821-4B4B-BD53-7070FEE5AEEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C06FDF0-EB2E-43B1-B0E7-0506B8844B42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C06FDF0-EB2E-43B1-B0E7-0506B8844B42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C06FDF0-EB2E-43B1-B0E7-0506B8844B42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C06FDF0-EB2E-43B1-B0E7-0506B8844B42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

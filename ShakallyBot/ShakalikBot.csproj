@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,10 +11,11 @@
   <ItemGroup>
     <PackageReference Include="Telegram.Bot" Version="18.0.0" />
     <PackageReference Include="Telegram.Bot.Extensions.Polling" Version="1.0.2" />
+    <PackageReference Include="YoutubeDLSharp" Version="0.4.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="D:\Jejikeh\programming\.net\shakaly\ShakallerImageCompression\Shakaller\Shakkaler\Shakkaler\Shakkaler.csproj" />
+    <ProjectReference Include="..\..\ShakallerImageCompression\Shakaller\ShakkalerCompress\Shakkaler\Shakkaler.csproj" />
   </ItemGroup>
 
 </Project>

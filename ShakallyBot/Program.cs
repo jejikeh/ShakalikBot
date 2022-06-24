@@ -6,10 +6,15 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Shakalik {
+    internal static class ProjectDir
+    {
+        public readonly static string currentDirectory = Directory.GetCurrentDirectory();
+        public readonly static string basePath = currentDirectory.Split(new string[] { "\\bin" }, StringSplitOptions.None)[0];
+    }
     class Program
     {
         private static TelegramBotClient m_client = new(PrivateTokenBot.PrivateToken);
-        
+
         static void Main()
         {
             
@@ -35,8 +40,7 @@ namespace Shakalik {
 
         private static async Task UpdateHandler(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
         {
-            string currentDirectory = Directory.GetCurrentDirectory();
-            string basePath = currentDirectory.Split(new string[] { "\\bin" }, StringSplitOptions.None)[0];
+            
             ShakalikDefaultReply defaultReply = new(cancellationToken, client, update.Message?.Chat.Id, update);
             CallBackQueryHandler defaultCallBackQuery = new(cancellationToken,client, update);
 
@@ -45,6 +49,10 @@ namespace Shakalik {
                 if(update.Message?.Text == "/start")
                 {
                     await defaultReply.WelcomeReply();
+                }
+                else if ((bool)(update.Message?.Text.StartsWith("https://www.youtube.com/")))
+                {
+                    await defaultReply.YoutubeVideoReply();
                 }
                 else
                 {

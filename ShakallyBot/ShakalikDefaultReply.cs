@@ -16,17 +16,10 @@ namespace Shakalik
     internal class ShakalikDefaultReply
     {
         private CancellationToken m_cancellationToken;
-        private Update m_update;
-        private ITelegramBotClient? m_client;
+        private readonly Update m_update;
+        private readonly ITelegramBotClient? m_client;
         private long? m_chatId;
-        private Random m_random = new();
-
-        private static List<string> emojiSet = new List<string>()
-            {
-                "🙃" , "😂", "🦸", "🤦‍", "🤷‍", "🥰", "🤗", "😶‍🌫", "😪", "😫", "😛", "😤", "🤒", "🤢", "🥸",
-                "🤖","👹","👽","🙉","🐻‍","❄️","🐗","🦊","🦄","🐈","🐏","🐧","👁️","👀","👀","👩🏾‍","❤️‍","👨🏾","👨🏻‍",
-                "❤️‍","👨🏾","👩‍","❤️‍","💋‍","👨"
-            };
+        private readonly Random m_random = new();
 
         public ShakalikDefaultReply(CancellationToken cancellationToken, ITelegramBotClient? client, long? chatId, Update update)
         {
@@ -36,9 +29,12 @@ namespace Shakalik
             m_update = update;
         }
 
+        // Start and error reply
         internal async Task WelcomeReply()
         {
-            Message? message = await m_client.SendTextMessageAsync(
+            GenerateChatDirectories.Init(m_chatId);
+
+            _ = await m_client.SendTextMessageAsync(
                 chatId: m_chatId,
                 text: "Привет 👋.\nЯ <b>Shakalik</b>, твой друг в мире сохранения <b>фото</b> 🖼 в удобоваримом  качестве😊.\nПросто скинь мне что ты хочешь сжать и я сделаю это 🤖.",
                 parseMode: ParseMode.Html,
@@ -52,20 +48,21 @@ namespace Shakalik
         }
         internal async Task ErrorReply()
         {
-            Message? message = await m_client.SendTextMessageAsync(
+            _ = await m_client.SendTextMessageAsync(
                 chatId: m_chatId,
-                text: "Я тебя не понял 😔, пожалуйста, нажми на /start",
+                text: $"Я тебя не понял {GenerateRandom.Emoji}, пожалуйста, нажми на /start",
                 parseMode: ParseMode.Html,
                 disableNotification: true,
                 cancellationToken: m_cancellationToken);
         }
-        
+
+        // Download photo
 
         internal async Task CompressPhotoAndReply(string savePath)
         {
-            Message? middleMessage = await m_client.SendTextMessageAsync(
+            _ = await m_client.SendTextMessageAsync(
                 chatId: m_chatId,
-                text: "<b>Почти готово </b>" + emojiSet[m_random.Next(emojiSet.Count)],
+                text: $"<b>Почти готово </b> {GenerateRandom.Emoji}",
                 parseMode: ParseMode.Html,
                 disableNotification: true,
                 cancellationToken: m_cancellationToken);
@@ -73,15 +70,13 @@ namespace Shakalik
 
             var fileId = m_update.Message?.Photo?.Last().FileId;
 
-            Directory.CreateDirectory(savePath + m_chatId);
-            Directory.CreateDirectory(savePath + m_chatId + @"\Uncompress");
-            Directory.CreateDirectory(savePath + m_chatId + @"\Compress");
+            
 
             string dirPath = savePath + m_chatId + @"\Uncompress";
             string compressPath = savePath + m_chatId + @"\Compress\";
 
-            await using FileStream fileStream = System.IO.File.OpenWrite(savePath + m_chatId + @"\Uncompress\" + fileId + ".jpg");
-            var file = await m_client.GetInfoAndDownloadFileAsync(
+            await using FileStream fileStream = System.IO.File.OpenWrite(ProjectDir.basePath + @"\Media\" + m_chatId + @"\Uncompress\" + fileId + ".jpg");
+            _ = await m_client.GetInfoAndDownloadFileAsync(
                 fileId: fileId,
                 destination: fileStream);
 
@@ -301,6 +296,17 @@ namespace Shakalik
             Message? compressionMessage = await m_client.SendTextMessageAsync(
                 chatId: m_chatId,
                 text: bytesSaved + " байт сохранено! " + emojiSet[m_random.Next(emojiSet.Count)],
+                parseMode: ParseMode.Html,
+                disableNotification: true,
+                cancellationToken: m_cancellationToken);
+        }
+        internal async Task YoutubeVideoReply()
+        {
+            await YouTubeDLWrapper.DownloadVideo(m_chatId.ToString(), m_update.Message.Text);
+
+            Message? message = await m_client.SendTextMessageAsync(
+                chatId: m_chatId,
+                text: m_update.Message.Text,
                 parseMode: ParseMode.Html,
                 disableNotification: true,
                 cancellationToken: m_cancellationToken);
